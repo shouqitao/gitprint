@@ -13,16 +13,14 @@
  * 项目地址:http://yun.gitwms.com/
 *********************************************************************************/
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace Git.Framework.Printer.Pager
-{
-    public partial class TableEntity:RowEntity
-    {
-        public TableEntity() { }
+namespace Git.Framework.Printer.Pager {
+
+    public partial class TableEntity : RowEntity {
+
+        public TableEntity() {
+        }
 
         /// <summary>
         /// 数据源名称

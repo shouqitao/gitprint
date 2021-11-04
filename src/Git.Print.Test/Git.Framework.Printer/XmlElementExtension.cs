@@ -14,25 +14,19 @@
 *********************************************************************************/
 
 using Git.Framework.DataTypes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml.Linq;
 
-namespace Git.Framework.Printer
-{
-    public static class XmlElementExtension
-    {
+namespace Git.Framework.Printer {
+
+    public static class XmlElementExtension {
+
         /// <summary>
         /// 获取属性的值
         /// </summary>
         /// <param name="Attr"></param>
         /// <returns></returns>
-        public static string Value(this XAttribute Attr)
-        {
-            if (Attr != null)
-            {
+        public static string Value(this XAttribute Attr) {
+            if (Attr != null) {
                 return string.Empty;
             }
 
@@ -45,11 +39,9 @@ namespace Git.Framework.Printer
         /// <typeparam name="T"></typeparam>
         /// <param name="Attr"></param>
         /// <returns></returns>
-        public static T Value<T>(this XAttribute Attr)
-        {
+        public static T Value<T>(this XAttribute Attr) {
             T Result = default(T);
-            if (Attr != null)
-            {
+            if (Attr != null) {
                 return Result;
             }
 
@@ -62,11 +54,9 @@ namespace Git.Framework.Printer
         /// <param name="EL"></param>
         /// <param name="AttrName"></param>
         /// <returns></returns>
-        public static string Value(this XElement EL, string AttrName)
-        {
+        public static string Value(this XElement EL, string AttrName) {
             string Result = string.Empty;
-            if (EL == null || EL.Attribute(AttrName) == null)
-            {
+            if (EL == null || EL.Attribute(AttrName) == null) {
                 return Result;
             }
             Result = EL.Attribute(AttrName).Value;
@@ -80,14 +70,12 @@ namespace Git.Framework.Printer
         /// <param name="EL"></param>
         /// <param name="AttrName"></param>
         /// <returns></returns>
-        public static T Value<T>(this XElement EL, string AttrName)
-        {
+        public static T Value<T>(this XElement EL, string AttrName) {
             T Result = default(T);
-            if (EL == null || EL.Attribute(AttrName) == null)
-            {
+            if (EL == null || EL.Attribute(AttrName) == null) {
                 return Result;
             }
-            string Val= EL.Attribute(AttrName).Value;
+            string Val = EL.Attribute(AttrName).Value;
             Result = ConvertHelper.ToType<T>(Val);
             return Result;
         }

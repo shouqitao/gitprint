@@ -13,16 +13,12 @@
  * 项目地址:http://yun.gitwms.com/
 *********************************************************************************/
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+namespace Git.Framework.Printer.Pager {
 
-namespace Git.Framework.Printer.Pager
-{
-    public partial class BarCodeEntity: ContentEntity
-    {
-        public BarCodeEntity() { }
+    public partial class BarCodeEntity : ContentEntity {
+
+        public BarCodeEntity() {
+        }
 
         public float Left { get; set; }
 

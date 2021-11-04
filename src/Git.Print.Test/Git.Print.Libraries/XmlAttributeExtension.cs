@@ -13,25 +13,19 @@
  * 项目地址:http://yun.gitwms.com/
 *********************************************************************************/
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml.Linq;
 
-namespace Git.Print.Libraries
-{
-    public static class XmlAttributeExtension
-    {
+namespace Git.Print.Libraries {
+
+    public static class XmlAttributeExtension {
+
         /// <summary>
         /// 获取XML节点属性的数据值
         /// </summary>
         /// <param name="Atrr"></param>
         /// <returns></returns>
-        public static string Value(this XAttribute Atrr)
-        {
-            if (Atrr == null)
-            {
+        public static string Value(this XAttribute Atrr) {
+            if (Atrr == null) {
                 return string.Empty;
             }
             return Atrr.Value;

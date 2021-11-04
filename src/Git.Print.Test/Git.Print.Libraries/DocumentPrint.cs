@@ -1,7 +1,7 @@
-﻿using Gma.QrCodeNet.Encoding;
-using Gma.QrCodeNet.Encoding.Windows.Render;
-using Git.Framework.DataTypes;
+﻿using Git.Framework.DataTypes;
 using Git.Framework.DataTypes.ExtensionMethods;
+using Gma.QrCodeNet.Encoding;
+using Gma.QrCodeNet.Encoding.Windows.Render;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -15,10 +15,10 @@ using System.Xml.Linq;
 using ZXing;
 using ZXing.QrCode;
 
-namespace Git.Print.Libraries
-{
-    public partial class DocumentPrint:IPrint
-    {
+namespace Git.Print.Libraries {
+
+    public partial class DocumentPrint : IPrint {
+
         /// <summary>
         /// 打印模板文件路径
         /// </summary>
@@ -54,16 +54,14 @@ namespace Git.Print.Libraries
         /// </summary>
         private XDocument root;
 
-        public DocumentPrint(string filePath, string printName, bool isAutoHeigth, Dictionary<string, object> dataSource)
-        {
+        public DocumentPrint(string filePath, string printName, bool isAutoHeigth, Dictionary<string, object> dataSource) {
             this.FilePath = filePath;
             this.PrintName = printName;
             this.IsAutoHeight = isAutoHeigth;
             this.DataSource = dataSource;
         }
 
-        public DocumentPrint(string filePath, string printName, bool isAutoHeigth, string dataSource)
-        {
+        public DocumentPrint(string filePath, string printName, bool isAutoHeigth, string dataSource) {
             this.FilePath = FilePath;
             this.PrintName = printName;
             this.IsAutoHeight = isAutoHeigth;
@@ -76,8 +74,7 @@ namespace Git.Print.Libraries
         /// 初始化打印
         /// </summary>
         /// <returns></returns>
-        public IPrint Init()
-        {
+        public IPrint Init() {
             this.printDialog = new PrintDialog();
             this.printDocument = new PrintDocument();
             this.printDialog.Document = this.printDocument;
@@ -91,10 +88,8 @@ namespace Git.Print.Libraries
         /// <summary>
         /// 开始初始化内部变量
         /// </summary>
-        private void Begin()
-        {
-            if (!File.Exists(this.FilePath))
-            {
+        private void Begin() {
+            if (!File.Exists(this.FilePath)) {
                 throw new Exception("打印模板文件不存在");
             }
             this.root = XDocument.Load(this.FilePath);
@@ -106,27 +101,20 @@ namespace Git.Print.Libraries
             string DefaultPrinter = root.Element("Page").Attribute("DefaultPrinter").Value();
 
             //计算文档高度
-            if (this.IsAutoHeight)
-            {
+            if (this.IsAutoHeight) {
                 float PageHeith = 0;
-                foreach (XElement item in root.Element("Page").Elements())
-                {
-                    if (item.Name == "Line")
-                    {
+                foreach (XElement item in root.Element("Page").Elements()) {
+                    if (item.Name == "Line") {
                         XAttribute attribute = item.Attribute("Height");
-                        if (attribute != null && !string.IsNullOrWhiteSpace(attribute.Value()))
-                        {
+                        if (attribute != null && !string.IsNullOrWhiteSpace(attribute.Value())) {
                             float LineHeigth = string.IsNullOrWhiteSpace(item.Attribute("Height").Value()) ? 0 : Convert.ToSingle(item.Attribute("Height").Value());
                             PageHeith += LineHeigth;
                         }
-                    }
-                    else if (item.Name == "Loop")
-                    {
+                    } else if (item.Name == "Loop") {
                         string Values = item.Attribute("Values").Value();
                         List<Dictionary<string, object>> listValues = null;
                         listValues = this.DataSource[Values] as List<Dictionary<string, object>>;
-                        if (listValues != null)
-                        {
+                        if (listValues != null) {
                             XElement lineItem = item.Element("Line");
                             float LineHeigth = string.IsNullOrWhiteSpace(lineItem.Attribute("Height").Value()) ? 0 : Convert.ToSingle(lineItem.Attribute("Height").Value());
                             PageHeith += LineHeigth * listValues.Count();
@@ -144,25 +132,22 @@ namespace Git.Print.Libraries
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void PrintDocument_PrintPage(object sender, PrintPageEventArgs e)
-        {
+        private void PrintDocument_PrintPage(object sender, PrintPageEventArgs e) {
             Brush bru = Brushes.Black;
             Graphics g = e.Graphics;
 
             float totalHeight = 0;
             int rowIndex = 0;
 
-            Action<XElement, Dictionary<string, object>> ActionLine = (el, row) =>
-            {
-                float StartX= string.IsNullOrWhiteSpace(el.Attribute("StartX").Value()) ? 0 : Convert.ToSingle(el.Attribute("StartX").Value());
+            Action<XElement, Dictionary<string, object>> ActionLine = (el, row) => {
+                float StartX = string.IsNullOrWhiteSpace(el.Attribute("StartX").Value()) ? 0 : Convert.ToSingle(el.Attribute("StartX").Value());
                 float StartY = string.IsNullOrWhiteSpace(el.Attribute("StartY").Value()) ? 0 : Convert.ToSingle(el.Attribute("StartY").Value());
                 float EndX = string.IsNullOrWhiteSpace(el.Attribute("EndX").Value()) ? 0 : Convert.ToSingle(el.Attribute("EndX").Value());
                 float EndY = string.IsNullOrWhiteSpace(el.Attribute("EndY").Value()) ? 0 : Convert.ToSingle(el.Attribute("EndY").Value());
                 g.DrawLine(new Pen(bru), StartX, StartY, EndX, EndY);
             };
 
-            Action<XElement, Dictionary<string, object>> ActionText = (el, row) =>
-            {
+            Action<XElement, Dictionary<string, object>> ActionText = (el, row) => {
                 float Left = string.IsNullOrWhiteSpace(el.Attribute("Left").Value()) ? 0 : Convert.ToSingle(el.Attribute("Left").Value());
                 float Top = string.IsNullOrWhiteSpace(el.Attribute("Top").Value()) ? 0 : Convert.ToSingle(el.Attribute("Top").Value());
                 float FontSize = string.IsNullOrWhiteSpace(el.Attribute("FontSize").Value()) ? 0 : Convert.ToSingle(el.Attribute("FontSize").Value());
@@ -173,26 +158,21 @@ namespace Git.Print.Libraries
 
                 Top = totalHeight + Top;
                 string content = el.Value;
-                if (content.Contains("{{") && content.Contains("}}"))
-                {
+                if (content.Contains("{{") && content.Contains("}}")) {
                     int beginIndex = content.IndexOf("{{");
                     int endIndex = content.LastIndexOf("}}");
                     string key = content.Substring(beginIndex + 2, endIndex - beginIndex - 2);
                     string Value = row[key].ToString();
-                    if(Start>-1 && End>-1 && Value.IsNotEmpty())
-                    {
-                        Value = Value.SubStr(Start,End);
+                    if (Start > -1 && End > -1 && Value.IsNotEmpty()) {
+                        Value = Value.SubStr(Start, End);
                     }
                     g.DrawString(content.Replace("{{" + key + "}}", Value), new Font(FontName, FontSize, FontStyle.Regular), bru, new PointF(Left, Top));
-                }
-                else
-                {
+                } else {
                     g.DrawString(content, new Font(FontName, FontSize, FontStyle.Regular), bru, new PointF(Left, Top));
                 }
             };
 
-            Action<XElement, Dictionary<string, object>> ActionTd = (el, row) =>
-            {
+            Action<XElement, Dictionary<string, object>> ActionTd = (el, row) => {
                 float Left = string.IsNullOrWhiteSpace(el.Attribute("Left").Value()) ? 0 : Convert.ToSingle(el.Attribute("Left").Value());
                 float Top = string.IsNullOrWhiteSpace(el.Attribute("Top").Value()) ? 0 : Convert.ToSingle(el.Attribute("Top").Value());
                 float FontSize = string.IsNullOrWhiteSpace(el.Attribute("FontSize").Value()) ? 0 : Convert.ToSingle(el.Attribute("FontSize").Value());
@@ -214,47 +194,38 @@ namespace Git.Print.Libraries
                 //}
             };
 
-            Action<XElement, Dictionary<string, object>> ActionImage = (el, row) =>
-            {
+            Action<XElement, Dictionary<string, object>> ActionImage = (el, row) => {
                 float Left = string.IsNullOrWhiteSpace(el.Attribute("Left").Value()) ? 0 : Convert.ToSingle(el.Attribute("Left").Value());
                 float Top = string.IsNullOrWhiteSpace(el.Attribute("Top").Value()) ? 0 : Convert.ToSingle(el.Attribute("Top").Value());
                 int Width = 0;
                 int Heigth = 0;
 
-                if (el.Attribute("Width") != null)
-                {
+                if (el.Attribute("Width") != null) {
                     Width = string.IsNullOrWhiteSpace(el.Attribute("Width").Value()) ? 0 : Convert.ToInt32(el.Attribute("Width").Value());
                 }
-                if (el.Attribute("Heigth") != null)
-                {
+                if (el.Attribute("Heigth") != null) {
                     Heigth = string.IsNullOrWhiteSpace(el.Attribute("Heigth").Value()) ? 0 : Convert.ToInt32(el.Attribute("Heigth").Value());
                 }
 
                 Top = totalHeight + Top;
                 string content = el.Value;
-                if (content.Contains("{{") && content.Contains("}}"))
-                {
+                if (content.Contains("{{") && content.Contains("}}")) {
                     int beginIndex = content.IndexOf("{{");
                     int endIndex = content.LastIndexOf("}}");
                     string key = content.Substring(beginIndex + 2, endIndex - beginIndex - 2);
-                    if (row[key]!=null && File.Exists(row[key].ToString()))
-                    {
+                    if (row[key] != null && File.Exists(row[key].ToString())) {
                         Image image = Image.FromFile(row[key].ToString());
 
-                        if (Width == 0 || Heigth == 0)
-                        {
+                        if (Width == 0 || Heigth == 0) {
                             g.DrawImage(image, new PointF(Left, Top));
-                        }
-                        else
-                        {
+                        } else {
                             g.DrawImage(image, Left, Top, Width, Heigth);
                         }
                     }
                 }
             };
 
-            Action<XElement, Dictionary<string, object>> ActionQRCode = (el, row) =>
-            {
+            Action<XElement, Dictionary<string, object>> ActionQRCode = (el, row) => {
                 string content = string.Empty;
                 float Left = string.IsNullOrWhiteSpace(el.Attribute("Left").Value()) ? 0 : Convert.ToSingle(el.Attribute("Left").Value());
                 float Top = string.IsNullOrWhiteSpace(el.Attribute("Top").Value()) ? 0 : Convert.ToSingle(el.Attribute("Top").Value());
@@ -262,20 +233,17 @@ namespace Git.Print.Libraries
                 Size = Size == 0 ? 3 : Size;
                 Top = totalHeight + Top;
                 content = el.Value;
-                if (content.Contains("{{") && content.Contains("}}"))
-                {
+                if (content.Contains("{{") && content.Contains("}}")) {
                     int beginIndex = content.IndexOf("{{");
                     int endIndex = content.LastIndexOf("}}");
                     string key = content.Substring(beginIndex + 2, endIndex - beginIndex - 2);
                     content = content.Replace("{{" + key + "}}", row[key].ToString());
-
                 }
 
                 QrEncoder qrEncoder = new QrEncoder(ErrorCorrectionLevel.H);
                 QrCode qrCode = new QrCode();
                 qrEncoder.TryEncode(content, out qrCode);
-                using (MemoryStream ms = new MemoryStream())
-                {
+                using (MemoryStream ms = new MemoryStream()) {
                     GraphicsRenderer renderer = new GraphicsRenderer(new FixedModuleSize(Size, QuietZoneModules.Two));
                     renderer.WriteToStream(qrCode.Matrix, ImageFormat.Jpeg, ms);
                     Image image = Image.FromStream(ms);
@@ -283,8 +251,7 @@ namespace Git.Print.Libraries
                 }
             };
 
-            Action<XElement, Dictionary<string, object>> ActionBarCode = (el, row) =>
-            {
+            Action<XElement, Dictionary<string, object>> ActionBarCode = (el, row) => {
                 string content = string.Empty;
 
                 float Left = string.IsNullOrWhiteSpace(el.Attribute("Left").Value()) ? 0 : Convert.ToSingle(el.Attribute("Left").Value());
@@ -295,16 +262,14 @@ namespace Git.Print.Libraries
 
                 Top = totalHeight + Top;
                 content = el.Value;
-                if (content.Contains("{{") && content.Contains("}}"))
-                {
+                if (content.Contains("{{") && content.Contains("}}")) {
                     int beginIndex = content.IndexOf("{{");
                     int endIndex = content.LastIndexOf("}}");
                     string key = content.Substring(beginIndex + 2, endIndex - beginIndex - 2);
                     content = content.Replace("{{" + key + "}}", row[key].ToString());
                 }
 
-                QrCodeEncodingOptions options = new QrCodeEncodingOptions
-                {
+                QrCodeEncodingOptions options = new QrCodeEncodingOptions {
                     DisableECI = true,
                     CharacterSet = "UTF-8",
                     Width = (int)Math.Ceiling(Width),
@@ -317,66 +282,40 @@ namespace Git.Print.Libraries
                 g.DrawImage(bitmap, new PointF(Left, Top));
             };
 
-            
-
-            foreach (XElement item in root.Element("Page").Elements())
-            {
-                if (item.Name == "Line")
-                {
+            foreach (XElement item in root.Element("Page").Elements()) {
+                if (item.Name == "Line") {
                     float LineHeigth = string.IsNullOrWhiteSpace(item.Attribute("Height").Value()) ? 0 : Convert.ToSingle(item.Attribute("Height").Value());
-                    foreach (XElement child in item.Elements())
-                    {
-                        if (child.Name == "Text")
-                        {
+                    foreach (XElement child in item.Elements()) {
+                        if (child.Name == "Text") {
                             ActionText(child, this.DataSource);
-                        }
-                        else if (child.Name == "Image")
-                        {
+                        } else if (child.Name == "Image") {
                             ActionImage(child, this.DataSource);
-                        }
-                        else if (child.Name == "QRCode")
-                        {
+                        } else if (child.Name == "QRCode") {
                             ActionQRCode(child, this.DataSource);
-                        }
-                        else if (child.Name == "BarCode")
-                        {
+                        } else if (child.Name == "BarCode") {
                             ActionBarCode(child, this.DataSource);
-                        }
-                        else if (child.Name == "StrLine")
-                        {
+                        } else if (child.Name == "StrLine") {
                             ActionLine(child, this.DataSource);
                         }
                     }
                     totalHeight += LineHeigth;
                     rowIndex++;
-                }
-                else if (item.Name == "Loop")
-                {
+                } else if (item.Name == "Loop") {
                     string Values = item.Attribute("Values").Value();
                     List<Dictionary<string, object>> listValues = this.DataSource[Values] as List<Dictionary<string, object>>;
-                    if (listValues != null)
-                    {
+                    if (listValues != null) {
                         XElement lineItem = item.Element("Line");
                         float LineHeigth = string.IsNullOrWhiteSpace(lineItem.Attribute("Height").Value()) ? 0 : Convert.ToSingle(lineItem.Attribute("Height").Value());
-                        for (int i = 0; i < listValues.Count(); i++)
-                        {
+                        for (int i = 0; i < listValues.Count(); i++) {
                             Dictionary<string, object> dicRow = listValues[i];
-                            foreach (XElement child in lineItem.Elements())
-                            {
-                                if (child.Name == "Text")
-                                {
+                            foreach (XElement child in lineItem.Elements()) {
+                                if (child.Name == "Text") {
                                     ActionText(child, dicRow);
-                                }
-                                else if (child.Name == "Image")
-                                {
+                                } else if (child.Name == "Image") {
                                     ActionImage(child, dicRow);
-                                }
-                                else if (child.Name == "QRCode")
-                                {
+                                } else if (child.Name == "QRCode") {
                                     ActionQRCode(child, dicRow);
-                                }
-                                else if (child.Name == "BarCode")
-                                {
+                                } else if (child.Name == "BarCode") {
                                     ActionBarCode(child, dicRow);
                                 }
                             }
@@ -384,43 +323,29 @@ namespace Git.Print.Libraries
                             rowIndex++;
                         }
                     }
-                }
-                else if (item.Name == "Table")
-                {
+                } else if (item.Name == "Table") {
                     string Values = item.Attribute("Values").Value();
                     List<Dictionary<string, object>> listValues = this.DataSource[Values] as List<Dictionary<string, object>>;
-                    if (listValues != null)
-                    {
+                    if (listValues != null) {
                         XElement TrItem = item.Element("Tr");
                         float TrHeigth = string.IsNullOrWhiteSpace(TrItem.Attribute("Height").Value()) ? 0 : Convert.ToSingle(TrItem.Attribute("Height").Value());
 
-                        string AttrAutoHeight= TrItem.Attribute("AutoHeight").Value();
+                        string AttrAutoHeight = TrItem.Attribute("AutoHeight").Value();
                         bool AutoHeight = !string.IsNullOrWhiteSpace(AttrAutoHeight) && AttrAutoHeight.ToLower() == "true" ? true : false;
 
-                        for (int i = 0; i < listValues.Count(); i++)
-                        {
+                        for (int i = 0; i < listValues.Count(); i++) {
                             Dictionary<string, object> dicRow = listValues[i];
-                            foreach (XElement child in TrItem.Elements())
-                            {
-                                if (child.Name == "Text")
-                                {
+                            foreach (XElement child in TrItem.Elements()) {
+                                if (child.Name == "Text") {
                                     ActionText(child, dicRow);
-                                }
-                                else if (child.Name == "Image")
-                                {
+                                } else if (child.Name == "Image") {
                                     ActionImage(child, dicRow);
-                                }
-                                else if (child.Name == "QRCode")
-                                {
+                                } else if (child.Name == "QRCode") {
                                     ActionQRCode(child, dicRow);
-                                }
-                                else if (child.Name == "BarCode")
-                                {
+                                } else if (child.Name == "BarCode") {
                                     ActionBarCode(child, dicRow);
-                                }
-                                else if (child.Name == "Td")
-                                {
-                                    ActionTd(child,dicRow);
+                                } else if (child.Name == "Td") {
+                                    ActionTd(child, dicRow);
                                 }
                             }
                             totalHeight += TrHeigth;
@@ -435,8 +360,7 @@ namespace Git.Print.Libraries
         /// 打印调用执行
         /// </summary>
         /// <returns></returns>
-        public IPrint Print()
-        {
+        public IPrint Print() {
             this.printDocument.Print(); //触发打印
             return this;
         }
@@ -446,19 +370,15 @@ namespace Git.Print.Libraries
         /// </summary>
         /// <param name="fileName"></param>
         /// <returns></returns>
-        public IPrint PrintFile(string fileName)
-        {
-            if (!File.Exists(fileName))
-            {
+        public IPrint PrintFile(string fileName) {
+            if (!File.Exists(fileName)) {
                 throw new Exception("打印文件不存在");
             }
             this.DataSource = new Dictionary<string, object>();
             string line = string.Empty;
-            using (StreamReader reader = new StreamReader(fileName, Encoding.Default))
-            {
+            using (StreamReader reader = new StreamReader(fileName, Encoding.Default)) {
                 List<Dictionary<string, object>> list = new List<Dictionary<string, object>>();
-                while ((line = reader.ReadLine()) != null)
-                {
+                while ((line = reader.ReadLine()) != null) {
                     Dictionary<string, object> dic = new Dictionary<string, object>();
                     dic.Add("Line", line);
                     list.Add(dic);

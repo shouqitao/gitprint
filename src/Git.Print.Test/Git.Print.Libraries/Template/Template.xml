@@ -3,11 +3,11 @@
   <Line Height="100">
     <Text Left="2" Top="2" FontSize="7"></Text>
   </Line>
-  
+
   <Line Height="50">
     <StrLine StartX="10" StartY="1" EndX="180" EndY="1"></StrLine>
   </Line>
-  
+
   <Line Height="50">
     <Image Left="10" Top="1" Width="180" Heigth="38">{{Logo}}</Image>
   </Line>

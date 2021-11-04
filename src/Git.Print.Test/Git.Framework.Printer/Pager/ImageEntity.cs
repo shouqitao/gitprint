@@ -13,19 +13,15 @@
  * 项目地址:http://yun.gitwms.com/
 *********************************************************************************/
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+namespace Git.Framework.Printer.Pager {
 
-namespace Git.Framework.Printer.Pager
-{
     /// <summary>
     /// 图片坐标系
     /// </summary>
-    public partial class ImageEntity : ContentEntity
-    {
-        public ImageEntity() { }
+    public partial class ImageEntity : ContentEntity {
+
+        public ImageEntity() {
+        }
 
         public float Left { get; set; }
 

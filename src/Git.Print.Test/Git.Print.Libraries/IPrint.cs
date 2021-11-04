@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿namespace Git.Print.Libraries {
 
-namespace Git.Print.Libraries
-{
-    public partial interface IPrint
-    {
+    public partial interface IPrint {
+
         /// <summary>
         /// 初始化打印
         /// </summary>

@@ -13,15 +13,12 @@
  * 项目地址:http://yun.gitwms.com/
 *********************************************************************************/
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace Git.Framework.Printer
-{
-    public static class DataSourceExtension
-    {
+namespace Git.Framework.Printer {
+
+    public static class DataSourceExtension {
+
         /// <summary>
         /// 获取值
         /// </summary>
@@ -30,15 +27,12 @@ namespace Git.Framework.Printer
         /// <param name="dataSource"></param>
         /// <param name="Key"></param>
         /// <returns></returns>
-        public static Value Value<K, Value>(this Dictionary<K, Value> dataSource, K Key)
-        {
+        public static Value Value<K, Value>(this Dictionary<K, Value> dataSource, K Key) {
             Value Result = default(Value);
-            if (dataSource == null)
-            {
+            if (dataSource == null) {
                 return Result;
             }
-            if (!dataSource.ContainsKey(Key))
-            {
+            if (!dataSource.ContainsKey(Key)) {
                 return Result;
             }
 

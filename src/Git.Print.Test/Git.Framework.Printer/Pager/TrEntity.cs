@@ -13,22 +13,20 @@
  * 项目地址:http://yun.gitwms.com/
 *********************************************************************************/
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace Git.Framework.Printer.Pager
-{
-    public partial class TrEntity
-    {
-        public TrEntity() { }
+namespace Git.Framework.Printer.Pager {
+
+    public partial class TrEntity {
+
+        public TrEntity() {
+        }
 
         /// <summary>
         /// 表格行高度
         /// </summary>
         public float Height { get; set; }
-        
+
         public List<TdEntity> ListTD { get; set; }
     }
 }

@@ -17,22 +17,18 @@ using Git.Framework.Io;
 using Git.Framework.Printer.Pager;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml.Linq;
 
-namespace Git.Framework.Printer
-{
-    public partial class PageXmlReader
-    {
+namespace Git.Framework.Printer {
+
+    public partial class PageXmlReader {
         public string FilePath { get; set; }
 
         private XDocument Root { get; set; }
 
         private int RowIndex { get; set; }
 
-        public PageXmlReader(string FilePath)
-        {
+        public PageXmlReader(string FilePath) {
             this.FilePath = FilePath;
         }
 
@@ -40,12 +36,10 @@ namespace Git.Framework.Printer
         /// 获取文档对象
         /// </summary>
         /// <returns></returns>
-        public PageEntity Read()
-        {
+        public PageEntity Read() {
             PageEntity Result = new PageEntity();
 
-            if (!FileManager.FileExists(this.FilePath))
-            {
+            if (!FileManager.FileExists(this.FilePath)) {
                 throw new Exception("打印模板文件不存在");
             }
 
@@ -62,20 +56,14 @@ namespace Git.Framework.Printer
             Result.AutoHeight = AutoHeight;
             Result.Rows = new List<RowEntity>();
 
-            foreach (XElement item in this.Root.Element("Page").Elements())
-            {
-                if (item.Name == "Line")
-                {
+            foreach (XElement item in this.Root.Element("Page").Elements()) {
+                if (item.Name == "Line") {
                     LineEntity LineRow = this.ReadLine(item);
                     Result.Rows.Add(LineRow);
-                }
-                else if (item.Name == "Loop")
-                {
+                } else if (item.Name == "Loop") {
                     LoopEntity LineRow = this.ReadLoop(item);
                     Result.Rows.Add(LineRow);
-                }
-                else if (item.Name == "Table")
-                {
+                } else if (item.Name == "Table") {
                     TableEntity LineRow = this.ReadTable(item);
                     Result.Rows.Add(LineRow);
                 }
@@ -89,8 +77,7 @@ namespace Git.Framework.Printer
         /// </summary>
         /// <param name="ETable"></param>
         /// <returns></returns>
-        private TableEntity ReadTable(XElement ETable)
-        {
+        private TableEntity ReadTable(XElement ETable) {
             TableEntity Result = new TableEntity();
             string Values = ETable.Value<string>("Values");
             float BorderWidth = ETable.Value<float>("BorderWidth");
@@ -114,12 +101,10 @@ namespace Git.Framework.Printer
         /// 读取表头信息
         /// </summary>
         /// <returns></returns>
-        private THeadEntity ReadTHead(XElement ETable)
-        {
+        private THeadEntity ReadTHead(XElement ETable) {
             THeadEntity Result = null;
             XElement THead = ETable.Element("THead");
-            if (THead != null)
-            {
+            if (THead != null) {
                 Result = new THeadEntity();
                 float Height = THead.Value<float>("Height");
                 Result.Height = Height;
@@ -133,11 +118,9 @@ namespace Git.Framework.Printer
         /// </summary>
         /// <param name="ETable"></param>
         /// <returns></returns>
-        private List<TrEntity> ReadTR(XElement ETable)
-        {
+        private List<TrEntity> ReadTR(XElement ETable) {
             List<TrEntity> listResult = new List<TrEntity>();
-            foreach (XElement TR in ETable.Elements("Tr"))
-            {
+            foreach (XElement TR in ETable.Elements("Tr")) {
                 TrEntity entity = new TrEntity();
                 float Height = TR.Value<float>("Height");
                 entity.Height = Height;
@@ -152,13 +135,10 @@ namespace Git.Framework.Printer
         /// </summary>
         /// <param name="Tr"></param>
         /// <returns></returns>
-        private List<TdEntity> ReadTd(XElement Tr)
-        {
+        private List<TdEntity> ReadTd(XElement Tr) {
             List<TdEntity> listResult = new List<TdEntity>();
-            if (Tr != null)
-            {
-                foreach (XElement td in Tr.Elements("Td"))
-                {
+            if (Tr != null) {
+                foreach (XElement td in Tr.Elements("Td")) {
                     TdEntity entity = new TdEntity();
                     float Width = td.Value<float>("Width");
                     entity.Width = Width;
@@ -174,16 +154,14 @@ namespace Git.Framework.Printer
         /// </summary>
         /// <param name="ELoop"></param>
         /// <returns></returns>
-        private LoopEntity ReadLoop(XElement ELoop)
-        {
+        private LoopEntity ReadLoop(XElement ELoop) {
             LoopEntity Result = new LoopEntity();
             string Values = ELoop.Value<string>("Values");
             Result.Index = RowIndex;
             Result.KeyName = Values;
             Result.RowType = (int)ERowType.Loop;
             Result.ListLine = new List<LineEntity>();
-            foreach (XElement Node in ELoop.Elements("Line"))
-            {
+            foreach (XElement Node in ELoop.Elements("Line")) {
                 LineEntity LineRow = this.ReadLine(Node);
                 Result.ListLine.Add(LineRow);
             }
@@ -195,8 +173,7 @@ namespace Git.Framework.Printer
         /// </summary>
         /// <param name="ELine"></param>
         /// <returns></returns>
-        private LineEntity ReadLine(XElement ELine)
-        {
+        private LineEntity ReadLine(XElement ELine) {
             LineEntity Result = new LineEntity();
 
             float Height = ELine.Value<float>("Height");
@@ -212,33 +189,22 @@ namespace Git.Framework.Printer
         /// </summary>
         /// <param name="EL"></param>
         /// <returns></returns>
-        private List<ContentEntity> ReadContent(XElement EL)
-        {
+        private List<ContentEntity> ReadContent(XElement EL) {
             List<ContentEntity> listResult = new List<ContentEntity>();
-            foreach (XElement Node in EL.Elements())
-            {
-                if (Node.Name == "Text")
-                {
+            foreach (XElement Node in EL.Elements()) {
+                if (Node.Name == "Text") {
                     TextEntity Result = this.ReadText(Node);
                     listResult.Add(Result);
-                }
-                else if (Node.Name == "StrLine")
-                {
+                } else if (Node.Name == "StrLine") {
                     StrLineEntity Result = this.ReadStrLine(Node);
                     listResult.Add(Result);
-                }
-                else if (Node.Name == "Image")
-                {
+                } else if (Node.Name == "Image") {
                     ImageEntity Result = this.ReadImage(Node);
                     listResult.Add(Result);
-                }
-                else if (Node.Name == "QRCode")
-                {
+                } else if (Node.Name == "QRCode") {
                     QRCodeEntity Result = this.ReadQRCode(Node);
                     listResult.Add(Result);
-                }
-                else if (Node.Name == "BarCode")
-                {
+                } else if (Node.Name == "BarCode") {
                     BarCodeEntity Result = this.ReadBarCode(Node);
                     listResult.Add(Result);
                 }
@@ -251,8 +217,7 @@ namespace Git.Framework.Printer
         /// </summary>
         /// <param name="Node"></param>
         /// <returns></returns>
-        private TextEntity ReadText(XElement Node)
-        {
+        private TextEntity ReadText(XElement Node) {
             TextEntity Result = new TextEntity();
 
             float Left = Node.Value<float>("Left");
@@ -264,12 +229,9 @@ namespace Git.Framework.Printer
             int FontStyle = Node.Value<int>("FontStyle");
 
             string Content = Node.Value;
-            if (Content.Contains("{{") && Content.Contains("}}"))
-            {
+            if (Content.Contains("{{") && Content.Contains("}}")) {
                 Result.ContentType = 2;
-            }
-            else
-            {
+            } else {
                 Result.ContentType = 1;
             }
             Result.Content = Content;
@@ -289,8 +251,7 @@ namespace Git.Framework.Printer
         /// </summary>
         /// <param name="Node"></param>
         /// <returns></returns>
-        private StrLineEntity ReadStrLine(XElement Node)
-        {
+        private StrLineEntity ReadStrLine(XElement Node) {
             StrLineEntity Result = new StrLineEntity();
 
             float StartX = Node.Value<float>("StartX");
@@ -314,8 +275,7 @@ namespace Git.Framework.Printer
         /// </summary>
         /// <param name="Node"></param>
         /// <returns></returns>
-        private ImageEntity ReadImage(XElement Node)
-        {
+        private ImageEntity ReadImage(XElement Node) {
             ImageEntity Result = new ImageEntity();
 
             float Left = Node.Value<float>("Left");
@@ -324,12 +284,9 @@ namespace Git.Framework.Printer
             float Heigth = Node.Value<float>("Heigth");
             string Content = Node.Value;
 
-            if (Content.Contains("{{") && Content.Contains("}}"))
-            {
+            if (Content.Contains("{{") && Content.Contains("}}")) {
                 Result.ContentType = 2;
-            }
-            else
-            {
+            } else {
                 Result.ContentType = 1;
             }
             Result.Content = Content;
@@ -346,8 +303,7 @@ namespace Git.Framework.Printer
         /// </summary>
         /// <param name="Node"></param>
         /// <returns></returns>
-        private QRCodeEntity ReadQRCode(XElement Node)
-        {
+        private QRCodeEntity ReadQRCode(XElement Node) {
             QRCodeEntity Result = new QRCodeEntity();
 
             float Left = Node.Value<float>("Left");
@@ -358,12 +314,9 @@ namespace Git.Framework.Printer
 
             string Content = Node.Value;
 
-            if (Content.Contains("{{") && Content.Contains("}}"))
-            {
+            if (Content.Contains("{{") && Content.Contains("}}")) {
                 Result.ContentType = 2;
-            }
-            else
-            {
+            } else {
                 Result.ContentType = 1;
             }
             Result.Content = Content;
@@ -381,8 +334,7 @@ namespace Git.Framework.Printer
         /// </summary>
         /// <param name="Node"></param>
         /// <returns></returns>
-        private BarCodeEntity ReadBarCode(XElement Node)
-        {
+        private BarCodeEntity ReadBarCode(XElement Node) {
             BarCodeEntity Result = new BarCodeEntity();
 
             float Left = Node.Value<float>("Left");
@@ -393,12 +345,9 @@ namespace Git.Framework.Printer
 
             string Content = Node.Value;
 
-            if (Content.Contains("{{") && Content.Contains("}}"))
-            {
+            if (Content.Contains("{{") && Content.Contains("}}")) {
                 Result.ContentType = 2;
-            }
-            else
-            {
+            } else {
                 Result.ContentType = 1;
             }
             Result.Content = Content;

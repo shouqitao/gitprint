@@ -21,12 +21,10 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 
-namespace Git.Framework.Printer
-{
-    public partial class HMA300Print : IPrint
-    {
+namespace Git.Framework.Printer {
+
+    public partial class HMA300Print : IPrint {
         public cpcl_dll dll = null;
 
         /// <summary>
@@ -44,12 +42,10 @@ namespace Git.Framework.Printer
         /// </summary>
         private float CurrentHeight { get; set; }
 
-        public HMA300Print(string filePath, string printName, Dictionary<string, object> dataSource)
-        {
+        public HMA300Print(string filePath, string printName, Dictionary<string, object> dataSource) {
             PageXmlReader Reader = new PageXmlReader(filePath);
             this.Page = Reader.Read();
-            if (printName.IsNotEmpty())
-            {
+            if (printName.IsNotEmpty()) {
                 this.Page.DefaultPrinter = printName;
             }
             this.DataSource = dataSource;
@@ -59,47 +55,34 @@ namespace Git.Framework.Printer
         /// 打印初始化
         /// </summary>
         /// <returns></returns>
-        public IPrint Init()
-        {
+        public IPrint Init() {
             float PageHeight = 0;
-            if (this.Page.AutoHeight)
-            {
-                foreach (RowEntity Row in this.Page.Rows)
-                {
-                    if (Row.RowType == (int)ERowType.Line)
-                    {
+            if (this.Page.AutoHeight) {
+                foreach (RowEntity Row in this.Page.Rows) {
+                    if (Row.RowType == (int)ERowType.Line) {
                         LineEntity RowItem = Row as LineEntity;
                         PageHeight += RowItem.Height;
-                    }
-                    else if (Row.RowType == (int)ERowType.Loop)
-                    {
+                    } else if (Row.RowType == (int)ERowType.Loop) {
                         LoopEntity RowItem = Row as LoopEntity;
                         string Key = RowItem.KeyName;
                         object dataList = this.DataSource.Value<string, object>(Key);
-                        if (dataList != null && dataList is List<Dictionary<string, object>>)
-                        {
+                        if (dataList != null && dataList is List<Dictionary<string, object>>) {
                             List<Dictionary<string, object>> list = dataList as List<Dictionary<string, object>>;
-                            if (!list.IsNullOrEmpty())
-                            {
+                            if (!list.IsNullOrEmpty()) {
                                 float ItemHeight = RowItem.ListLine.Sum(a => a.Height);
                                 PageHeight += ItemHeight * list.Count();
                             }
                         }
-                    }
-                    else if (Row.RowType == (int)ERowType.Table)
-                    {
+                    } else if (Row.RowType == (int)ERowType.Table) {
                         TableEntity RowItem = Row as TableEntity;
-                        if (RowItem.Head != null)
-                        {
+                        if (RowItem.Head != null) {
                             PageHeight += RowItem.Head.Height;
                         }
                         string Key = RowItem.KeyName;
                         object dataList = this.DataSource.Value<string, object>(Key);
-                        if (dataList != null && dataList is List<Dictionary<string, object>>)
-                        {
+                        if (dataList != null && dataList is List<Dictionary<string, object>>) {
                             List<Dictionary<string, object>> list = dataList as List<Dictionary<string, object>>;
-                            if (!list.IsNullOrEmpty())
-                            {
+                            if (!list.IsNullOrEmpty()) {
                                 float ItemHeight = RowItem.ListTR.Sum(a => a.Height);
                                 PageHeight += ItemHeight * list.Count();
                             }
@@ -117,20 +100,16 @@ namespace Git.Framework.Printer
         /// 开始打印
         /// </summary>
         /// <returns></returns>
-        public IPrint Print()
-        {
+        public IPrint Print() {
             this.dll = new cpcl_dll();
             this.dll.printer = cpcl_dll.PrinterCreatorS("HM-A300");
-            
 
             int result = 0;
-            if (0 == dll.printer)
-            {
+            if (0 == dll.printer) {
                 throw new Exception("Create Model False");
             }
-            result = cpcl_dll.PortOpen(dll.printer, string.Format("{0},BAUDRATE_9600",this.Page.DefaultPrinter));
-            if (0 != result)
-            {
+            result = cpcl_dll.PortOpen(dll.printer, string.Format("{0},BAUDRATE_9600", this.Page.DefaultPrinter));
+            if (0 != result) {
                 throw new Exception("Port Open False");
             }
             cpcl_dll.CPCL_AddLabel(dll.printer, 0, (int)this.Page.Heigth, 1);
@@ -147,42 +126,27 @@ namespace Git.Framework.Printer
         /// <summary>
         /// 打印触发事件
         /// </summary>
-        private void PrintEvent()
-        {
-            foreach (RowEntity row in this.Page.Rows.Where(item => item.RowType == (int)ERowType.Table))
-            {
+        private void PrintEvent() {
+            foreach (RowEntity row in this.Page.Rows.Where(item => item.RowType == (int)ERowType.Table)) {
                 TableEntity RowItem = row as TableEntity;
                 float TabLeft = RowItem.Left;
 
-                Action<List<TdEntity>> action = (List<TdEntity> listTD) =>
-                {
+                Action<List<TdEntity>> action = (List<TdEntity> listTD) => {
                     float CurrentLeft = TabLeft;
-                    foreach (TdEntity Td in listTD)
-                    {
-                        if (!Td.ListContent.IsNullOrEmpty())
-                        {
-                            foreach (ContentEntity item in Td.ListContent)
-                            {
-                                if (item is StrLineEntity)
-                                {
-                                }
-                                else if (item is TextEntity)
-                                {
+                    foreach (TdEntity Td in listTD) {
+                        if (!Td.ListContent.IsNullOrEmpty()) {
+                            foreach (ContentEntity item in Td.ListContent) {
+                                if (item is StrLineEntity) {
+                                } else if (item is TextEntity) {
                                     TextEntity Content = item as TextEntity;
                                     Content.Left = Content.Left + CurrentLeft;
-                                }
-                                else if (item is ImageEntity)
-                                {
+                                } else if (item is ImageEntity) {
                                     ImageEntity Content = item as ImageEntity;
                                     Content.Left = Content.Left + CurrentLeft;
-                                }
-                                else if (item is QRCodeEntity)
-                                {
+                                } else if (item is QRCodeEntity) {
                                     QRCodeEntity Content = item as QRCodeEntity;
                                     Content.Left = Content.Left + CurrentLeft;
-                                }
-                                else if (item is BarCodeEntity)
-                                {
+                                } else if (item is BarCodeEntity) {
                                     BarCodeEntity Content = item as BarCodeEntity;
                                     Content.Left = Content.Left + CurrentLeft;
                                 }
@@ -191,45 +155,34 @@ namespace Git.Framework.Printer
                         CurrentLeft = CurrentLeft + Td.Width;
                     }
                 };
-                if (RowItem.Head != null)
-                {
+                if (RowItem.Head != null) {
                     action(RowItem.Head.ListTD);
                 }
-                if (!RowItem.ListTR.IsNullOrEmpty())
-                {
-                    foreach (TrEntity td in RowItem.ListTR)
-                    {
+                if (!RowItem.ListTR.IsNullOrEmpty()) {
+                    foreach (TrEntity td in RowItem.ListTR) {
                         action(td.ListTD);
                     }
                 }
             }
 
-            foreach (RowEntity row in this.Page.Rows)
-            {
-                if (row.RowType == (int)ERowType.Line)
-                {
+            foreach (RowEntity row in this.Page.Rows) {
+                if (row.RowType == (int)ERowType.Line) {
                     LineEntity RowItem = row as LineEntity;
                     this.WriteLine(RowItem, this.DataSource);
-                }
-                else if (row.RowType == (int)ERowType.Loop)
-                {
+                } else if (row.RowType == (int)ERowType.Loop) {
                     LoopEntity RowItem = row as LoopEntity;
                     string KeyName = RowItem.KeyName;
                     object ds = this.DataSource.Value<string, object>(KeyName);
                     List<Dictionary<string, object>> listSource = ds as List<Dictionary<string, object>>;
-                    if (!listSource.IsNullOrEmpty())
-                    {
+                    if (!listSource.IsNullOrEmpty()) {
                         this.WriteLoop(RowItem, listSource);
                     }
-                }
-                else if (row.RowType == (int)ERowType.Table)
-                {
+                } else if (row.RowType == (int)ERowType.Table) {
                     TableEntity RowItem = row as TableEntity;
                     string KeyName = RowItem.KeyName;
                     object ds = this.DataSource.Value<string, object>(KeyName);
                     List<Dictionary<string, object>> listSource = ds as List<Dictionary<string, object>>;
-                    if (!listSource.IsNullOrEmpty())
-                    {
+                    if (!listSource.IsNullOrEmpty()) {
                         this.WriteTable(RowItem, listSource);
                     }
                 }
@@ -241,28 +194,23 @@ namespace Git.Framework.Printer
         /// </summary>
         /// <param name="entity"></param>
         /// <param name="listSource"></param>
-        private void WriteTable(TableEntity entity, List<Dictionary<string, object>> listSource)
-        {
+        private void WriteTable(TableEntity entity, List<Dictionary<string, object>> listSource) {
             int RowCount = 0; //行数
             int ColCount = 0;
-            if (entity.Head != null)
-            {
+            if (entity.Head != null) {
                 RowCount += 1;
             }
-            if (!listSource.IsNullOrEmpty())
-            {
+            if (!listSource.IsNullOrEmpty()) {
                 RowCount += listSource.Count();
             }
-            if (!entity.ListTR.IsNullOrEmpty())
-            {
+            if (!entity.ListTR.IsNullOrEmpty()) {
                 ColCount = entity.ListTR[0].ListTD.Count();
             }
             this.CurrentHeight += entity.Top; //当前画布的高度，要保留这个高度用于写入内容
 
             float TabHeight = 0;
             //画表格的横线
-            if (true)
-            {
+            if (true) {
                 float TabCurrentHeight = 0;
                 TabCurrentHeight = this.CurrentHeight;
 
@@ -273,8 +221,7 @@ namespace Git.Framework.Printer
                 //g.DrawLine(new Pen(bru), StartX, StartY, EndX, EndY);
                 cpcl_dll.CPCL_AddLine(this.dll.printer, (int)StartX, (int)StartY, (int)EndX, (int)EndY, 2);
 
-                if (entity.Head != null)
-                {
+                if (entity.Head != null) {
                     TabCurrentHeight = TabCurrentHeight + entity.Head.Height;
                     StartY = TabCurrentHeight;
                     EndY = TabCurrentHeight;
@@ -282,11 +229,9 @@ namespace Git.Framework.Printer
                     cpcl_dll.CPCL_AddLine(this.dll.printer, (int)StartX, (int)StartY, (int)EndX, (int)EndY, 2);
                 }
 
-                if (!listSource.IsNullOrEmpty())
-                {
+                if (!listSource.IsNullOrEmpty()) {
                     TrEntity trEntity = entity.ListTR[0];
-                    foreach (Dictionary<string, object> item in listSource)
-                    {
+                    foreach (Dictionary<string, object> item in listSource) {
                         TabCurrentHeight = TabCurrentHeight + trEntity.Height;
                         StartY = TabCurrentHeight;
                         EndY = TabCurrentHeight;
@@ -297,8 +242,7 @@ namespace Git.Framework.Printer
                 TabHeight = TabCurrentHeight - this.CurrentHeight;
             }
 
-            if (true)
-            {
+            if (true) {
                 float StartX = entity.Left;
                 float EndX = entity.Left;
                 float StartY = this.CurrentHeight;
@@ -306,11 +250,9 @@ namespace Git.Framework.Printer
                 //g.DrawLine(new Pen(bru), StartX, StartY, EndX, EndY);
                 cpcl_dll.CPCL_AddLine(this.dll.printer, (int)StartX, (int)StartY, (int)EndX, (int)EndY, 2);
 
-                if (!listSource.IsNullOrEmpty())
-                {
+                if (!listSource.IsNullOrEmpty()) {
                     TrEntity trEntity = entity.ListTR[0];
-                    foreach (TdEntity td in trEntity.ListTD)
-                    {
+                    foreach (TdEntity td in trEntity.ListTD) {
                         StartX = StartX + td.Width;
                         EndX = EndX + td.Width;
                         //g.DrawLine(new Pen(bru), StartX, StartY, EndX, EndY);
@@ -319,24 +261,19 @@ namespace Git.Framework.Printer
                 }
             }
 
-            if (true)
-            {
-                if (entity.Head != null && !entity.Head.ListTD.IsNullOrEmpty())
-                {
+            if (true) {
+                if (entity.Head != null && !entity.Head.ListTD.IsNullOrEmpty()) {
                     Dictionary<string, object> dicSource = new Dictionary<string, object>();
                     entity.Head.ListTD.ForEach(item => { this.WriteTd(item, dicSource); });
                     this.CurrentHeight += entity.Head.Height;
                 }
             }
 
-            if (true)
-            {
-                if (!listSource.IsNullOrEmpty() && !entity.ListTR.IsNullOrEmpty())
-                {
+            if (true) {
+                if (!listSource.IsNullOrEmpty() && !entity.ListTR.IsNullOrEmpty()) {
                     TrEntity trEntity = entity.ListTR[0];
                     float TrHeight = trEntity.Height;
-                    foreach (Dictionary<string, object> dicSource in listSource)
-                    {
+                    foreach (Dictionary<string, object> dicSource in listSource) {
                         trEntity.ListTD.ForEach(item => { this.WriteTd(item, dicSource); });
                         this.CurrentHeight += TrHeight;
                     }
@@ -349,34 +286,22 @@ namespace Git.Framework.Printer
         /// </summary>
         /// <param name="entity"></param>
         /// <param name="dicSource"></param>
-        private void WriteTd(TdEntity entity, Dictionary<string, object> dicSource)
-        {
-            if (!entity.ListContent.IsNullOrEmpty())
-            {
-                foreach (ContentEntity item in entity.ListContent)
-                {
-                    if (item is StrLineEntity)
-                    {
+        private void WriteTd(TdEntity entity, Dictionary<string, object> dicSource) {
+            if (!entity.ListContent.IsNullOrEmpty()) {
+                foreach (ContentEntity item in entity.ListContent) {
+                    if (item is StrLineEntity) {
                         StrLineEntity Content = item as StrLineEntity;
                         this.WriteLine(Content);
-                    }
-                    else if (item is TextEntity)
-                    {
+                    } else if (item is TextEntity) {
                         TextEntity Content = item as TextEntity;
                         this.WriteText(Content, dicSource);
-                    }
-                    else if (item is ImageEntity)
-                    {
+                    } else if (item is ImageEntity) {
                         ImageEntity Content = item as ImageEntity;
                         this.WriteImage(Content, dicSource);
-                    }
-                    else if (item is QRCodeEntity)
-                    {
+                    } else if (item is QRCodeEntity) {
                         QRCodeEntity Content = item as QRCodeEntity;
                         this.WriteQRCode(Content, dicSource);
-                    }
-                    else if (item is BarCodeEntity)
-                    {
+                    } else if (item is BarCodeEntity) {
                         BarCodeEntity Content = item as BarCodeEntity;
                         this.WriteBarCode(Content, dicSource);
                     }
@@ -388,14 +313,10 @@ namespace Git.Framework.Printer
         /// 循环写入
         /// </summary>
         /// <param name="entity"></param>
-        private void WriteLoop(LoopEntity entity, List<Dictionary<string, object>> listSource)
-        {
-            if (!entity.ListLine.IsNullOrEmpty())
-            {
-                foreach (Dictionary<string, object> ds in listSource)
-                {
-                    foreach (LineEntity item in entity.ListLine)
-                    {
+        private void WriteLoop(LoopEntity entity, List<Dictionary<string, object>> listSource) {
+            if (!entity.ListLine.IsNullOrEmpty()) {
+                foreach (Dictionary<string, object> ds in listSource) {
+                    foreach (LineEntity item in entity.ListLine) {
                         this.WriteLine(item, ds);
                     }
                 }
@@ -406,34 +327,22 @@ namespace Git.Framework.Printer
         /// 写入单行
         /// </summary>
         /// <param name="entity"></param>
-        private void WriteLine(LineEntity entity, Dictionary<string, object> dicSource)
-        {
-            if (!entity.ListContent.IsNullOrEmpty())
-            {
-                foreach (ContentEntity item in entity.ListContent)
-                {
-                    if (item is StrLineEntity)
-                    {
+        private void WriteLine(LineEntity entity, Dictionary<string, object> dicSource) {
+            if (!entity.ListContent.IsNullOrEmpty()) {
+                foreach (ContentEntity item in entity.ListContent) {
+                    if (item is StrLineEntity) {
                         StrLineEntity Content = item as StrLineEntity;
                         this.WriteLine(Content);
-                    }
-                    else if (item is TextEntity)
-                    {
+                    } else if (item is TextEntity) {
                         TextEntity Content = item as TextEntity;
                         this.WriteText(Content, dicSource);
-                    }
-                    else if (item is ImageEntity)
-                    {
+                    } else if (item is ImageEntity) {
                         ImageEntity Content = item as ImageEntity;
                         this.WriteImage(Content, dicSource);
-                    }
-                    else if (item is QRCodeEntity)
-                    {
+                    } else if (item is QRCodeEntity) {
                         QRCodeEntity Content = item as QRCodeEntity;
                         this.WriteQRCode(Content, dicSource);
-                    }
-                    else if (item is BarCodeEntity)
-                    {
+                    } else if (item is BarCodeEntity) {
                         BarCodeEntity Content = item as BarCodeEntity;
                         this.WriteBarCode(Content, dicSource);
                     }
@@ -445,8 +354,7 @@ namespace Git.Framework.Printer
         /// <summary>
         /// 写入直线
         /// </summary>
-        private void WriteLine(StrLineEntity entity)
-        {
+        private void WriteLine(StrLineEntity entity) {
             //g.DrawLine(new Pen(bru), entity.StartX, entity.StartY, entity.EndX, entity.EndY);
             cpcl_dll.CPCL_AddLine(this.dll.printer, (int)entity.StartX, (int)entity.StartY, (int)entity.EndX, (int)entity.EndY, 2);
         }
@@ -455,28 +363,22 @@ namespace Git.Framework.Printer
         /// 写入文本内容
         /// </summary>
         /// <param name="entity"></param>
-        private void WriteText(TextEntity entity, Dictionary<string, object> dicSource)
-        {
+        private void WriteText(TextEntity entity, Dictionary<string, object> dicSource) {
             float CurrentTop = entity.Top + this.CurrentHeight;
 
-
-            if (entity.ContentType == 1)
-            {
+            if (entity.ContentType == 1) {
                 string Value = entity.Content;
                 FontStyle style = FontStyleOption.GetFontStyleFormat(entity.FontStyle);
                 cpcl_dll.CPCL_AddText(dll.printer, cpcl_dll.ROTATE_NONE, 0, (int)entity.FontSize, (int)entity.Left, (int)CurrentTop, Value);
 
                 //this.g.DrawString(Value, new Font(entity.FontName, entity.FontSize, style), bru, new PointF(entity.Left, CurrentTop));
-            }
-            else if (entity.ContentType == 2)
-            {
+            } else if (entity.ContentType == 2) {
                 string content = entity.Content;
                 int beginIndex = content.IndexOf("{{");
                 int endIndex = content.LastIndexOf("}}");
                 string key = content.Substring(beginIndex + 2, endIndex - beginIndex - 2);
                 string Value = dicSource.Value<string, object>(key) as string;
-                if (entity.Start > -1 && entity.End > 0 && Value.IsNotEmpty())
-                {
+                if (entity.Start > -1 && entity.End > 0 && Value.IsNotEmpty()) {
                     Value = Value.SubStr(entity.Start, entity.End);
                 }
 
@@ -492,44 +394,32 @@ namespace Git.Framework.Printer
         /// 写入图片
         /// </summary>
         /// <param name="entity"></param>
-        private void WriteImage(ImageEntity entity, Dictionary<string, object> dicSource)
-        {
+        private void WriteImage(ImageEntity entity, Dictionary<string, object> dicSource) {
             float CurrentTop = entity.Top + this.CurrentHeight;
-            if (entity.ContentType == 2)
-            {
+            if (entity.ContentType == 2) {
                 string content = entity.Content;
                 int beginIndex = content.IndexOf("{{");
                 int endIndex = content.LastIndexOf("}}");
                 string key = content.Substring(beginIndex + 2, endIndex - beginIndex - 2);
                 string Value = dicSource.Value<string, object>(key) as string;
-                if (Value.IsNotEmpty() && File.Exists(Value))
-                {
+                if (Value.IsNotEmpty() && File.Exists(Value)) {
                     Image image = Image.FromFile(Value);
-                    if (entity.Width == 0 || entity.Heigth == 0)
-                    {
+                    if (entity.Width == 0 || entity.Heigth == 0) {
                         //g.DrawImage(image, new PointF(entity.Left, CurrentTop));
-                        cpcl_dll.CPCL_AddImage(dll.printer, cpcl_dll.ROTATE_NONE, (int)entity.Left,(int)CurrentTop, Value);
-                    }
-                    else
-                    {
+                        cpcl_dll.CPCL_AddImage(dll.printer, cpcl_dll.ROTATE_NONE, (int)entity.Left, (int)CurrentTop, Value);
+                    } else {
                         //g.DrawImage(image, entity.Left, CurrentTop, entity.Width, entity.Heigth);
                         cpcl_dll.CPCL_AddImage(dll.printer, cpcl_dll.ROTATE_NONE, (int)entity.Left, (int)CurrentTop, Value);
                     }
                 }
-            }
-            else if (entity.ContentType == 1)
-            {
+            } else if (entity.ContentType == 1) {
                 string content = entity.Content;
-                if (content.IsNotEmpty() && File.Exists(content))
-                {
+                if (content.IsNotEmpty() && File.Exists(content)) {
                     Image image = Image.FromFile(content);
-                    if (entity.Width == 0 || entity.Heigth == 0)
-                    {
+                    if (entity.Width == 0 || entity.Heigth == 0) {
                         //g.DrawImage(image, new PointF(entity.Left, CurrentTop));
                         cpcl_dll.CPCL_AddImage(dll.printer, cpcl_dll.ROTATE_NONE, (int)entity.Left, (int)CurrentTop, content);
-                    }
-                    else
-                    {
+                    } else {
                         //g.DrawImage(image, entity.Left, CurrentTop, entity.Width, entity.Heigth);
                         cpcl_dll.CPCL_AddImage(dll.printer, cpcl_dll.ROTATE_NONE, (int)entity.Left, (int)CurrentTop, content);
                     }
@@ -541,21 +431,17 @@ namespace Git.Framework.Printer
         /// 写入二维码
         /// </summary>
         /// <param name="entity"></param>
-        private void WriteQRCode(QRCodeEntity entity, Dictionary<string, object> dicSource)
-        {
+        private void WriteQRCode(QRCodeEntity entity, Dictionary<string, object> dicSource) {
             float CurrentTop = entity.Top + this.CurrentHeight;
             string content = string.Empty;
-            if (entity.ContentType == 2)
-            {
+            if (entity.ContentType == 2) {
                 content = entity.Content;
                 int beginIndex = content.IndexOf("{{");
                 int endIndex = content.LastIndexOf("}}");
                 string key = content.Substring(beginIndex + 2, endIndex - beginIndex - 2);
                 string Value = dicSource.Value<string, object>(key) as string;
                 content = Value;
-            }
-            else if (entity.ContentType == 1)
-            {
+            } else if (entity.ContentType == 1) {
                 content = entity.Content;
             }
 
@@ -581,21 +467,17 @@ namespace Git.Framework.Printer
         /// 写入条码
         /// </summary>
         /// <param name="entity"></param>
-        private void WriteBarCode(BarCodeEntity entity, Dictionary<string, object> dicSource)
-        {
+        private void WriteBarCode(BarCodeEntity entity, Dictionary<string, object> dicSource) {
             float CurrentTop = entity.Top + this.CurrentHeight;
             string content = string.Empty;
-            if (entity.ContentType == 2)
-            {
+            if (entity.ContentType == 2) {
                 content = entity.Content;
                 int beginIndex = content.IndexOf("{{");
                 int endIndex = content.LastIndexOf("}}");
                 string key = content.Substring(beginIndex + 2, endIndex - beginIndex - 2);
                 string Value = dicSource.Value<string, object>(key) as string;
                 content = Value;
-            }
-            else if (entity.ContentType == 1)
-            {
+            } else if (entity.ContentType == 1) {
                 content = entity.Content;
             }
 
@@ -616,8 +498,8 @@ namespace Git.Framework.Printer
         }
     }
 
-    public class cpcl_dll
-    {
+    public class cpcl_dll {
+
         [DllImport("CPCL_SDK", CallingConvention = CallingConvention.Cdecl)]
         public static extern int PrinterCreator(ref IntPtr printer, string model);
 
@@ -672,7 +554,6 @@ namespace Git.Framework.Printer
         [DllImport("CPCL_SDK", CallingConvention = CallingConvention.Cdecl)]
         public static extern int CPCL_SetFontSize(int printer, int width, int height);
 
-
         [DllImport("CPCL_SDK", CallingConvention = CallingConvention.Cdecl)]
         public static extern int CPCL_SetDensity(int printer, int density);
 
@@ -681,6 +562,7 @@ namespace Git.Framework.Printer
 
         [DllImport("CPCL_SDK", CallingConvention = CallingConvention.Cdecl)]
         public static extern int CPCL_SetTextSpacing(int printer, int Spacing);
+
         [DllImport("CPCL_SDK", CallingConvention = CallingConvention.Cdecl)]
         public static extern int CPCL_SetLeftMargin(int printer, int Margin);
 
@@ -692,6 +574,7 @@ namespace Git.Framework.Printer
 
         [DllImport("CPCL_SDK", CallingConvention = CallingConvention.Cdecl)]
         public static extern int CPCL_Abort(int printer);
+
         [DllImport("CPCL_SDK", CallingConvention = CallingConvention.Cdecl)]
         public static extern int CPCL_Print(int printer);
 
@@ -700,7 +583,6 @@ namespace Git.Framework.Printer
 
         [DllImport("CPCL_SDK", CallingConvention = CallingConvention.Cdecl)]
         public static extern int CPCL_PreFeed(int printer, int distance);
-
 
         [DllImport("CPCL_SDK", CallingConvention = CallingConvention.Cdecl)]
         public static extern int CPCL_PostFeed(int printer, int distance);
@@ -725,12 +607,14 @@ namespace Git.Framework.Printer
 
         //rotate
         public const int ROTATE_NONE = 0;
+
         public const int ROTATE_90 = 1;
         public const int ROTATE_180 = 2;
         public const int ROTATE_270 = 3;
 
         //ecc level
         public const int ECC_LEVEL_L = 0;
+
         public const int ECC_LEVEL_M = 1;
         public const int ECC_LEVEL_Q = 2;
         public const int ECC_LEVEL_H = 3;

@@ -1,24 +1,17 @@
 ﻿using Git.Print.Libraries;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
-namespace Git.Print.Test
-{
-    public partial class Form1 : Form
-    {
-        public Form1()
-        {
+namespace Git.Print.Test {
+
+    public partial class Form1 : Form {
+
+        public Form1() {
             InitializeComponent();
         }
 
-        private Dictionary<string, object> GetDataSource()
-        {
+        private Dictionary<string, object> GetDataSource() {
             Dictionary<string, object> dic = new Dictionary<string, object>();
 
             dic.Add("Logo", System.AppDomain.CurrentDomain.BaseDirectory + "abc.jpg");
@@ -38,7 +31,6 @@ namespace Git.Print.Test
                 new Dictionary<string, object>() { { "Index", "2"},{ "StrID", "565666"},{ "StrName", "玻璃杯"},{ "DCount", "7"},{ "DPrice", "45"},{ "DAmount", "45545"} },
                 new Dictionary<string, object>() { { "Index", "3"},{ "StrID", "897845"},{ "StrName", "烟灰缸"},{ "DCount", "5"},{ "DPrice", "2435"},{ "DAmount", "67767"} },
                 new Dictionary<string, object>() { { "Index", "4"},{ "StrID", "904395"},{ "StrName", "茶几"},{ "DCount", "3"},{ "DPrice", "45245"},{ "DAmount", "6767"} },
-
             };
             dic.Add("Detials", Info);
 
@@ -50,17 +42,14 @@ namespace Git.Print.Test
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnDocumentDic_Click(object sender, EventArgs e)
-        {
+        private void btnDocumentDic_Click(object sender, EventArgs e) {
             string tempalte = System.AppDomain.CurrentDomain.BaseDirectory + "\\Template\\Template.xml";
             Dictionary<string, object> dic = GetDataSource();
-            IPrint instance = new DocumentPrint(tempalte,"",true,dic);
+            IPrint instance = new DocumentPrint(tempalte, "", true, dic);
             instance.Init().Print();
         }
 
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
+        private void Form1_Load(object sender, EventArgs e) {
         }
 
         /// <summary>
@@ -68,17 +57,14 @@ namespace Git.Print.Test
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnZPL_Click(object sender, EventArgs e)
-        {
+        private void btnZPL_Click(object sender, EventArgs e) {
             string tempalte = System.AppDomain.CurrentDomain.BaseDirectory + "\\Template\\Template.xml";
             Dictionary<string, object> dic = GetDataSource();
             IPrint instance = new ZPLPrint(tempalte, "COM2", true, dic);
             instance.Init().Print();
         }
 
-        private void btnSelectFile_Click(object sender, EventArgs e)
-        {
-
+        private void btnSelectFile_Click(object sender, EventArgs e) {
         }
     }
 }

@@ -13,46 +13,30 @@
  * 项目地址:http://yun.gitwms.com/
 *********************************************************************************/
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using ZXing;
 
-namespace Git.Framework.Printer
-{
-    public partial class BarCodeOption
-    {
+namespace Git.Framework.Printer {
+
+    public partial class BarCodeOption {
+
         /// <summary>
         /// 获取条码的类型
         /// </summary>
         /// <param name="Value"></param>
         /// <returns></returns>
-        public static BarcodeFormat GetBarcodeFormat(int Value)
-        {
+        public static BarcodeFormat GetBarcodeFormat(int Value) {
             BarcodeFormat Result = BarcodeFormat.CODE_128;
-            if (Value == 4)
-            {
+            if (Value == 4) {
                 Result = BarcodeFormat.CODE_39;
-            }
-            else if (Value == 8)
-            {
+            } else if (Value == 8) {
                 Result = BarcodeFormat.CODE_93;
-            }
-            else if (Value == 16)
-            {
+            } else if (Value == 16) {
                 Result = BarcodeFormat.CODE_128;
-            }
-            else if (Value == 64)
-            {
+            } else if (Value == 64) {
                 Result = BarcodeFormat.EAN_8;
-            }
-            else if (Value == 128)
-            {
+            } else if (Value == 128) {
                 Result = BarcodeFormat.EAN_13;
-            }
-            else if (Value == 2048)
-            {
+            } else if (Value == 2048) {
                 Result = BarcodeFormat.QR_CODE;
             }
             return Result;

@@ -1,22 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
-namespace Git.Framework.Printer.Test
-{
-    static class Program
-    {
+namespace Git.Framework.Printer.Test {
+
+    internal static class Program {
+
         /// <summary>
         /// 应用程序的主入口点。
         /// </summary>
         [STAThread]
-        static void Main()
-        {
+        private static void Main() {
             var a = HttpGet("http://www.ip138.com", "gbk");
             var a1 = parseHtml(a);
 
@@ -25,9 +21,7 @@ namespace Git.Framework.Printer.Test
             Application.Run(new Form1());
         }
 
-
-        public static string HttpGet(string url, string encoding)
-        {
+        public static string HttpGet(string url, string encoding) {
             Encoding encode = System.Text.Encoding.GetEncoding(encoding);
             WebClient MyWebClient = new WebClient();
             MyWebClient.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.84 Safari/537.36");
@@ -37,16 +31,14 @@ namespace Git.Framework.Printer.Test
             return pageHtml;
         }
 
-        public static string parseHtml(String pageHtml)
-        {
+        public static string parseHtml(String pageHtml) {
             string ip = "";
             Match m = Regex.Match(pageHtml, @"((25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))\.){3}(25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))");
 
-            if (m.Success)
-            {
+            if (m.Success) {
                 ip = m.Value;
             }
-            
+
             return ip;
         }
     }

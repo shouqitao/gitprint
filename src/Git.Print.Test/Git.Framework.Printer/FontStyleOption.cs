@@ -13,37 +13,23 @@
  * 项目地址:http://yun.gitwms.com/
 *********************************************************************************/
 
-using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 
-namespace Git.Framework.Printer
-{
-    public partial class FontStyleOption
-    {
-        public static FontStyle GetFontStyleFormat(int Value)
-        {
+namespace Git.Framework.Printer {
+
+    public partial class FontStyleOption {
+
+        public static FontStyle GetFontStyleFormat(int Value) {
             FontStyle Result = FontStyle.Regular;
-            if (Value == 0)
-            {
+            if (Value == 0) {
                 Result = FontStyle.Regular;
-            }
-            else if (Value == 1)
-            {
+            } else if (Value == 1) {
                 Result = FontStyle.Bold;
-            }
-            else if (Value == 2)
-            {
+            } else if (Value == 2) {
                 Result = FontStyle.Italic;
-            }
-            else if (Value == 4)
-            {
+            } else if (Value == 4) {
                 Result = FontStyle.Underline;
-            }
-            else if (Value == 8)
-            {
+            } else if (Value == 8) {
                 Result = FontStyle.Strikeout;
             }
             return Result;

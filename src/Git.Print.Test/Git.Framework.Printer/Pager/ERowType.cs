@@ -13,28 +13,23 @@
  * 项目地址:http://yun.gitwms.com/
 *********************************************************************************/
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+namespace Git.Framework.Printer.Pager {
 
-namespace Git.Framework.Printer.Pager
-{
-    public enum ERowType
-    {
+    public enum ERowType {
+
         /// <summary>
         /// 行
         /// </summary>
-        Line=1,
+        Line = 1,
 
         /// <summary>
         /// 循环行
         /// </summary>
-        Loop=2,
+        Loop = 2,
 
         /// <summary>
         /// 表格
         /// </summary>
-        Table=3
+        Table = 3
     }
 }

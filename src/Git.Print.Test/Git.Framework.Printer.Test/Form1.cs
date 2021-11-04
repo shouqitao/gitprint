@@ -1,37 +1,29 @@
-﻿
-using Gma.QrCodeNet.Encoding;
+﻿using Gma.QrCodeNet.Encoding;
 using Gma.QrCodeNet.Encoding.Windows.Render;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Windows.Forms;
 
-namespace Git.Framework.Printer.Test
-{
-    public partial class Form1 : Form
-    {
-        public Form1()
-        {
+namespace Git.Framework.Printer.Test {
+
+    public partial class Form1 : Form {
+
+        public Form1() {
             InitializeComponent();
         }
 
-        private void btnDocumentDic_Click(object sender, EventArgs e)
-        {
+        private void btnDocumentDic_Click(object sender, EventArgs e) {
             string tempalte = System.AppDomain.CurrentDomain.BaseDirectory + "\\Template\\Template.xml";
             Dictionary<string, object> dic = GetDataSource();
             IPrint instance = new DocumentPrint(tempalte, "", dic);
             instance.Init().Print();
         }
 
-        private Dictionary<string, object> GetDataSource()
-        {
+        private Dictionary<string, object> GetDataSource() {
             Dictionary<string, object> dic = new Dictionary<string, object>();
 
             dic.Add("Logo", System.AppDomain.CurrentDomain.BaseDirectory + "abc.jpg");
@@ -51,15 +43,13 @@ namespace Git.Framework.Printer.Test
                 new Dictionary<string, object>() { { "Index", "2"},{ "StrID", "565666"},{ "StrName", "玻璃杯"},{ "DCount", "7"},{ "DPrice", "45"},{ "DAmount", "45545"} },
                 new Dictionary<string, object>() { { "Index", "3"},{ "StrID", "897845"},{ "StrName", "烟灰缸"},{ "DCount", "5"},{ "DPrice", "2435"},{ "DAmount", "67767"} },
                 new Dictionary<string, object>() { { "Index", "4"},{ "StrID", "904395"},{ "StrName", "茶几"},{ "DCount", "3"},{ "DPrice", "45245"},{ "DAmount", "6767"} },
-
             };
             dic.Add("Detials", Info);
 
             return dic;
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
+        private void button1_Click(object sender, EventArgs e) {
             string tempalte = System.AppDomain.CurrentDomain.BaseDirectory + "\\Template\\Bluetooth.xml";
             Dictionary<string, object> dic = GetDataSource();
             IPrint instance = new HMA300Print(tempalte, "", dic);
@@ -97,12 +87,10 @@ namespace Git.Framework.Printer.Test
             ////result = cpcl_dll.CPCL_SetTextBold(dll.printer, 0);
             //result = cpcl_dll.CPCL_AddText(dll.printer, cpcl_dll.ROTATE_NONE, 0, 0, 0, 0, "12345678900000");
 
-
             ////ACTIVE BARCODE TEXT
             //result = cpcl_dll.CPCL_AddBarCodeText(dll.printer, 1, 7, 0, 0);
             ////CODE 128
             //result = cpcl_dll.CPCL_AddBarCode(dll.printer, cpcl_dll.ROTATE_NONE, cpcl_dll.BARCODE_128, 2, 2, 50, 8, 98, "code128");
-
 
             ////CODE 39
             //result = cpcl_dll.CPCL_AddBarCode(dll.printer, cpcl_dll.ROTATE_NONE, cpcl_dll.BARCODE_39, 2, 2, 50, 8, 176, "CODE39");
@@ -133,8 +121,6 @@ namespace Git.Framework.Printer.Test
             ////BOX
             //result = cpcl_dll.CPCL_AddBox(dll.printer, 24, 700, 100, 900, 2);
 
-
-
             //// result = cpcl_dll.CPCL_PreFeed(dll.printer, 20);
             //result = cpcl_dll.CPCL_Print(dll.printer);
             //result = cpcl_dll.PortClose(dll.printer);
@@ -146,8 +132,7 @@ namespace Git.Framework.Printer.Test
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void button2_Click(object sender, EventArgs e)
-        {
+        private void button2_Click(object sender, EventArgs e) {
             List<string> list = new List<string>()
             {
                 "TK101","TK102","TK103","TK104",
@@ -158,27 +143,24 @@ namespace Git.Framework.Printer.Test
 
                 "TK401","TK402","TK403","TK404","TK405","TK406","TK407","TK408","TK409","TK410","TK411","TK412","TK413","TK414",
             };
-            foreach (string str in list)
-            {
+            foreach (string str in list) {
                 string Content = str;
                 QrEncoder qrEncoder = new QrEncoder(ErrorCorrectionLevel.H);
                 QrCode qrCode = new QrCode();
                 qrEncoder.TryEncode(Content, out qrCode);
-                using (MemoryStream ms = new MemoryStream())
-                {
+                using (MemoryStream ms = new MemoryStream()) {
                     GraphicsRenderer renderer = new GraphicsRenderer(new FixedModuleSize(18, QuietZoneModules.Two), Brushes.White, Brushes.MidnightBlue);
-                    
+
                     renderer.WriteToStream(qrCode.Matrix, ImageFormat.Jpeg, ms);
                     Image image = Image.FromStream(ms);
-                    image.Save(str+".jpg");
+                    image.Save(str + ".jpg");
                 }
             }
         }
     }
 
+    public class cpcl_dll {
 
-    public class cpcl_dll
-    {
         [DllImport("CPCL_SDK")]
         public static extern int PrinterCreator(ref IntPtr printer, string model);
 
@@ -233,7 +215,6 @@ namespace Git.Framework.Printer.Test
         [DllImport("CPCL_SDK")]
         public static extern int CPCL_SetFontSize(int printer, int width, int height);
 
-
         [DllImport("CPCL_SDK")]
         public static extern int CPCL_SetDensity(int printer, int density);
 
@@ -242,6 +223,7 @@ namespace Git.Framework.Printer.Test
 
         [DllImport("CPCL_SDK")]
         public static extern int CPCL_SetTextSpacing(int printer, int Spacing);
+
         [DllImport("CPCL_SDK")]
         public static extern int CPCL_SetLeftMargin(int printer, int Margin);
 
@@ -253,6 +235,7 @@ namespace Git.Framework.Printer.Test
 
         [DllImport("CPCL_SDK")]
         public static extern int CPCL_Abort(int printer);
+
         [DllImport("CPCL_SDK")]
         public static extern int CPCL_Print(int printer);
 
@@ -261,7 +244,6 @@ namespace Git.Framework.Printer.Test
 
         [DllImport("CPCL_SDK")]
         public static extern int CPCL_PreFeed(int printer, int distance);
-
 
         [DllImport("CPCL_SDK")]
         public static extern int CPCL_PostFeed(int printer, int distance);
@@ -286,12 +268,14 @@ namespace Git.Framework.Printer.Test
 
         //rotate
         public const int ROTATE_NONE = 0;
+
         public const int ROTATE_90 = 1;
         public const int ROTATE_180 = 2;
         public const int ROTATE_270 = 3;
 
         //ecc level
         public const int ECC_LEVEL_L = 0;
+
         public const int ECC_LEVEL_M = 1;
         public const int ECC_LEVEL_Q = 2;
         public const int ECC_LEVEL_H = 3;

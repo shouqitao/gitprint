@@ -1,39 +1,29 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Windows.Forms;
 
-namespace Git.Framework.BluteBooth.Test
-{
-    public partial class Form1 : Form
-    {
-        public Form1()
-        {
+namespace Git.Framework.BluteBooth.Test {
+
+    public partial class Form1 : Form {
+
+        public Form1() {
             InitializeComponent();
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
+        private void button1_Click(object sender, EventArgs e) {
             int result = 0;
 
             cpcl_dll dll = new cpcl_dll();
             dll.printer = cpcl_dll.PrinterCreatorS("HM-A300");
             // dll.printer = cpcl_dll.PrinterCreatorS("HM-Z3-605F");
             //dll.printer = cpcl_dll.PrinterCreatorS("COM5");
-            if (0 == dll.printer)
-            {
+            if (0 == dll.printer) {
                 MessageBox.Show("Create Model False");
                 return;
             }
             //result = cpcl_dll.PortOpen(dll.printer, "USB");
             result = cpcl_dll.PortOpen(dll.printer, "COM5,BAUDRATE_9600");
-            if (0 != result)
-            {
+            if (0 != result) {
                 MessageBox.Show("Port Open False");
                 return;
             }
@@ -51,12 +41,10 @@ namespace Git.Framework.BluteBooth.Test
             //result = cpcl_dll.CPCL_SetTextBold(dll.printer, 0);
             result = cpcl_dll.CPCL_AddText(dll.printer, cpcl_dll.ROTATE_NONE, 0, 0, 0, 0, "12345678900000");
 
-
             //ACTIVE BARCODE TEXT
             result = cpcl_dll.CPCL_AddBarCodeText(dll.printer, 1, 7, 0, 0);
             //CODE 128
             result = cpcl_dll.CPCL_AddBarCode(dll.printer, cpcl_dll.ROTATE_NONE, cpcl_dll.BARCODE_128, 2, 2, 50, 8, 98, "code128");
-
 
             //CODE 39
             result = cpcl_dll.CPCL_AddBarCode(dll.printer, cpcl_dll.ROTATE_NONE, cpcl_dll.BARCODE_39, 2, 2, 50, 8, 176, "CODE39");
@@ -87,8 +75,6 @@ namespace Git.Framework.BluteBooth.Test
             //BOX
             result = cpcl_dll.CPCL_AddBox(dll.printer, 24, 700, 100, 900, 2);
 
-
-
             // result = cpcl_dll.CPCL_PreFeed(dll.printer, 20);
             result = cpcl_dll.CPCL_Print(dll.printer);
             result = cpcl_dll.PortClose(dll.printer);
@@ -96,9 +82,9 @@ namespace Git.Framework.BluteBooth.Test
         }
     }
 
-    public class cpcl_dll
-    {
-        [DllImport("CPCL_SDK",CallingConvention = CallingConvention.Cdecl)]
+    public class cpcl_dll {
+
+        [DllImport("CPCL_SDK", CallingConvention = CallingConvention.Cdecl)]
         public static extern int PrinterCreator(ref IntPtr printer, string model);
 
         [DllImport("CPCL_SDK")]
@@ -152,7 +138,6 @@ namespace Git.Framework.BluteBooth.Test
         [DllImport("CPCL_SDK")]
         public static extern int CPCL_SetFontSize(int printer, int width, int height);
 
-
         [DllImport("CPCL_SDK")]
         public static extern int CPCL_SetDensity(int printer, int density);
 
@@ -161,6 +146,7 @@ namespace Git.Framework.BluteBooth.Test
 
         [DllImport("CPCL_SDK")]
         public static extern int CPCL_SetTextSpacing(int printer, int Spacing);
+
         [DllImport("CPCL_SDK")]
         public static extern int CPCL_SetLeftMargin(int printer, int Margin);
 
@@ -172,6 +158,7 @@ namespace Git.Framework.BluteBooth.Test
 
         [DllImport("CPCL_SDK")]
         public static extern int CPCL_Abort(int printer);
+
         [DllImport("CPCL_SDK")]
         public static extern int CPCL_Print(int printer);
 
@@ -180,7 +167,6 @@ namespace Git.Framework.BluteBooth.Test
 
         [DllImport("CPCL_SDK")]
         public static extern int CPCL_PreFeed(int printer, int distance);
-
 
         [DllImport("CPCL_SDK")]
         public static extern int CPCL_PostFeed(int printer, int distance);
@@ -205,12 +191,14 @@ namespace Git.Framework.BluteBooth.Test
 
         //rotate
         public const int ROTATE_NONE = 0;
+
         public const int ROTATE_90 = 1;
         public const int ROTATE_180 = 2;
         public const int ROTATE_270 = 3;
 
         //ecc level
         public const int ECC_LEVEL_L = 0;
+
         public const int ECC_LEVEL_M = 1;
         public const int ECC_LEVEL_Q = 2;
         public const int ECC_LEVEL_H = 3;

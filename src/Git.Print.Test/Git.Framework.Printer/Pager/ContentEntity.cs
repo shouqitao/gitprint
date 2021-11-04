@@ -13,16 +13,12 @@
  * 项目地址:http://yun.gitwms.com/
 *********************************************************************************/
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+namespace Git.Framework.Printer.Pager {
 
-namespace Git.Framework.Printer.Pager
-{
-    public partial class ContentEntity
-    {
-        public ContentEntity() { }
+    public partial class ContentEntity {
+
+        public ContentEntity() {
+        }
 
         /// <summary>
         /// 内容类型 1 文本 2 占位符
